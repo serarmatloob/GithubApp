@@ -1,6 +1,7 @@
 package com.matloob.githubapp.dagger;
 
 import com.matloob.githubapp.dagger.main.MainActivityModule;
+import com.matloob.githubapp.dagger.main.MainViewModelModule;
 import com.matloob.githubapp.ui.MainActivity;
 
 import dagger.Module;
@@ -13,7 +14,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ContributeActivityModule {
 
     @ContributesAndroidInjector(
-            modules = {MainActivityModule.class}
+            modules = {
+                    MainActivityModule.class,
+                    MainViewModelModule.class
+            }
     )
     abstract MainActivity contributeMainActivity();
 }
