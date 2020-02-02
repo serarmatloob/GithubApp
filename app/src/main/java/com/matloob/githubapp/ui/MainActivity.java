@@ -1,10 +1,12 @@
-package com.matloob.githubapp;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.matloob.githubapp.ui;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.matloob.githubapp.R;
+
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class MainActivity extends DaggerAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
