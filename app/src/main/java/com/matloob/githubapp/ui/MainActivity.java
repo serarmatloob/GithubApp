@@ -37,7 +37,6 @@ public class MainActivity extends DaggerAppCompatActivity implements MainViewLis
         // Init view model
         viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         // Init binding
-        // Binding instance
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
