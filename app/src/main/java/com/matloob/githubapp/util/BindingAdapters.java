@@ -5,7 +5,10 @@ import android.view.View;
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.matloob.githubapp.models.CommitResponse;
 import com.matloob.githubapp.ui.CommitsRecyclerAdapter;
+
+import java.util.List;
 
 /**
  * Created by Serar Matloob on 2/2/2020.
@@ -22,9 +25,12 @@ public class BindingAdapters {
         }
     }
 
-    @BindingAdapter("setAdapter")
-    public static void setAdapter(RecyclerView recyclerView, CommitsRecyclerAdapter commitsRecyclerAdapter){
+    @BindingAdapter({"app:setAdapter", "app:setData"})
+    public static void setAdapter(RecyclerView recyclerView, CommitsRecyclerAdapter commitsRecyclerAdapter, List<CommitResponse> data){
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(commitsRecyclerAdapter);
+        if(data != null){
+            commitsRecyclerAdapter.setCommits(data);
+        }
     }
 }

@@ -3,7 +3,7 @@ package com.matloob.githubapp.dagger.main;
 import com.matloob.githubapp.api.CommitsApi;
 import com.matloob.githubapp.ui.CommitsRecyclerAdapter;
 import com.matloob.githubapp.ui.MainActivity;
-import com.matloob.githubapp.ui.SetRepoListener;
+import com.matloob.githubapp.ui.MainViewListener;
 
 import dagger.Module;
 import dagger.Provides;
@@ -25,7 +25,7 @@ public abstract class MainActivityModule {
     }
 
     @Provides
-    static SetRepoListener provideSetRepoListener(MainActivity mainActivity) {
+    static MainViewListener provideMainViewListener(MainActivity mainActivity) {
         return mainActivity;
     }
 }

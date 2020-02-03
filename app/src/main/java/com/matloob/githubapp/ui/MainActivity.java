@@ -1,6 +1,7 @@
 package com.matloob.githubapp.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -17,14 +18,17 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity implements SetRepoListener {
+public class MainActivity extends DaggerAppCompatActivity implements MainViewListener {
+
+    // Tag
     private static final String TAG = "MainActivity";
+
+    // ViewModel factory
     @Inject
     ViewModelFactory viewModelFactory;
-    @Inject
-    CommitsRecyclerAdapter commitsRecyclerAdapter;
+
+    // ViewModel instance
     private MainViewModel viewModel;
-    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,25 +37,16 @@ public class MainActivity extends DaggerAppCompatActivity implements SetRepoList
         // Init view model
         viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         // Init binding
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        // Binding instance
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
-        binding.setRecyclerAdapter(commitsRecyclerAdapter);
 
-        // Observe commits list liveData
-        viewModel.getCommits().observe(this, commitResponses -> {
-            if (commitResponses != null) {
-                commitsRecyclerAdapter.setCommits(commitResponses);
-            }
-        });
-
-        // Observe changes in Git repository
-        viewModel.isRepoSet().observe(this, isRepoSet -> binding.setRepoSet(isRepoSet));
-
-        // Observe error
+        // Observe error and show snackBar
         viewModel.getIsError().observe(this, error ->
         {
             if (error) {
+                Log.i(TAG, "Error: " + getString(R.string.can_t_fetch_data));
                 showSnackBar(R.string.can_t_fetch_data);
             }
         });
@@ -72,15 +67,9 @@ public class MainActivity extends DaggerAppCompatActivity implements SetRepoList
      * Shows the dialog fragment.
      */
     public void showDialog() {
+        // Show dialog with saved owner and repo
         DialogFragment dialogFragment = new SearchDialog(viewModel.getRepository().getOwner(), viewModel.getRepository().getRepo());
         dialogFragment.show(getSupportFragmentManager(), "dialog");
-    }
-
-    /**
-     * Called when search button is clicked
-     */
-    public void showDialog(View view) {
-        showDialog();
     }
 
     /**
@@ -91,8 +80,13 @@ public class MainActivity extends DaggerAppCompatActivity implements SetRepoList
      */
     @Override
     public void onSetNewRepo(String owner, String repo) {
+        // Set repo args
         viewModel.setRepository(new MainViewModel.Repository(owner, repo));
         // Start loading commits
         viewModel.loadCommits();
+    }
+
+    public void onSearchBtnClick(View view) {
+        showDialog();
     }
 }

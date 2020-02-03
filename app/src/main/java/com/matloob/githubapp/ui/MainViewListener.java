@@ -3,8 +3,8 @@ package com.matloob.githubapp.ui;
 /**
  * Created by Serar Matloob on 2/2/2020.
  *
- * Callback interface fired when new repo is set.
+ * Callback interface for Main View Model.
  */
-public interface SetRepoListener {
+public interface MainViewListener {
     void onSetNewRepo(String owner, String repo);
 }

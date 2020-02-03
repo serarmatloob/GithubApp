@@ -21,9 +21,13 @@ import dagger.android.support.DaggerDialogFragment;
  */
 public class SearchDialog extends DaggerDialogFragment {
     @Inject
-    SetRepoListener setRepoListener;
+    MainViewListener mainViewListener;
     private String owner;
     private String repo;
+
+    public SearchDialog() {
+        // Required empty constructor
+    }
 
     public SearchDialog(String owner, String repo) {
         this.owner = owner;
@@ -39,11 +43,11 @@ public class SearchDialog extends DaggerDialogFragment {
         // Get text from whatever last saved in view model and set it to edit text.
         ownerEditText.setText(owner);
         repoEditText.setText(repo);
-
+        // Return alert dialog to get input from user.
         return new AlertDialog.Builder(getContext())
                 .setView(dialogView)
                 .setTitle(R.string.search)
-                .setPositiveButton("OK", (dialogInterface, i) -> setRepoListener.onSetNewRepo(ownerEditText.getText().toString(), repoEditText.getText().toString()))
+                .setPositiveButton("OK", (dialogInterface, i) -> mainViewListener.onSetNewRepo(ownerEditText.getText().toString(), repoEditText.getText().toString()))
                 .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).create();
     }
 }

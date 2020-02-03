@@ -21,13 +21,24 @@ import retrofit2.Response;
  * Created by Serar Matloob on 2/2/2020.
  */
 public class MainViewModel extends ViewModel {
+    // Retrofit api service instance
     private CommitsApi commitsApi;
+    // Init empty epo
     private Repository repository = new Repository();
+    // Commits live data
     private MutableLiveData<List<CommitResponse>> commits = new MutableLiveData<>();
 
+    // Booleans for status
     private MutableLiveData<Boolean> isError = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<Boolean> isRepoSet = new MutableLiveData<>();
+
+    @Inject
+    CommitsRecyclerAdapter commitsRecyclerAdapter;
+
+    public CommitsRecyclerAdapter getCommitsRecyclerAdapter() {
+        return commitsRecyclerAdapter;
+    }
 
     @Inject
     public MainViewModel(CommitsApi commitsApi) {
@@ -61,7 +72,7 @@ public class MainViewModel extends ViewModel {
      */
     public void setRepository(Repository repository) {
         this.repository = repository;
-        // Publish that repository is set
+        // Notify that repository is set.
         isRepoSet.setValue(true);
     }
 
@@ -116,4 +127,5 @@ public class MainViewModel extends ViewModel {
             return repo;
         }
     }
+
 }
