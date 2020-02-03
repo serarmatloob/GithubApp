@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">GithubApp</string>
+    <string name="sha">Commit sha:</string>
+    <string name="message">Commit message:</string>
+    <string name="something_went_wrong">Something went wrong!</string>
+    <string name="can_t_fetch_data">Can\'t fetch data!</string>
+    <string name="owner">Owner (e.g microsoft)</string>
+    <string name="repo">Repository (e.g terminal)</string>
+    <string name="search">Search</string>
+    <string name="set_repo">Please click the search button to set repository</string>
 </resources>
