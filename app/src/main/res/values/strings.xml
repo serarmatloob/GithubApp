@@ -8,6 +8,6 @@
     <string name="repo">Repository (e.g terminal)</string>
     <string name="search">Search</string>
     <string name="repo_not_set">Repository is not set</string>
-    <string name="set_repo">Please click the search button to set repository</string>
+    <string name="set_repo">Please click the search button to set gitRepository</string>
     <string name="no_idea_emoji">&#129335;</string>
 </resources>

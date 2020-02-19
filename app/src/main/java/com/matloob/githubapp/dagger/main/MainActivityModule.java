@@ -1,9 +1,11 @@
 package com.matloob.githubapp.dagger.main;
 
 import com.matloob.githubapp.api.CommitsApi;
+import com.matloob.githubapp.repository.Repository;
 import com.matloob.githubapp.ui.CommitsRecyclerAdapter;
 import com.matloob.githubapp.ui.MainActivity;
 import com.matloob.githubapp.ui.MainViewListener;
+import com.matloob.githubapp.util.SharedPreferencesUtil;
 
 import dagger.Module;
 import dagger.Provides;
@@ -20,12 +22,17 @@ public abstract class MainActivityModule {
     }
 
     @Provides
-    static CommitsRecyclerAdapter provideCommitAdapter() {
-        return new CommitsRecyclerAdapter();
+    static CommitsRecyclerAdapter provideCommitAdapter(MainViewListener mainViewListener) {
+        return new CommitsRecyclerAdapter(mainViewListener);
     }
 
     @Provides
     static MainViewListener provideMainViewListener(MainActivity mainActivity) {
         return mainActivity;
+    }
+
+    @Provides
+    static Repository provideRepo(SharedPreferencesUtil sharedPreferencesUtil) {
+        return new Repository(sharedPreferencesUtil);
     }
 }

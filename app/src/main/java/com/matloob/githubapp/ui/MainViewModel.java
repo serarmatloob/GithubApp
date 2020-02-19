@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.matloob.githubapp.api.CommitsApi;
 import com.matloob.githubapp.models.CommitResponse;
+import com.matloob.githubapp.models.GitRepository;
+import com.matloob.githubapp.repository.Repository;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +26,7 @@ public class MainViewModel extends ViewModel {
     // Retrofit api service instance
     private CommitsApi commitsApi;
     // Init empty epo
-    private Repository repository = new Repository();
+    private GitRepository gitRepository = new GitRepository();
     // Commits live data
     private MutableLiveData<List<CommitResponse>> commits = new MutableLiveData<>();
 
@@ -33,23 +35,23 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<Boolean> isRepoSet = new MutableLiveData<>();
 
-    @Inject
-    CommitsRecyclerAdapter commitsRecyclerAdapter;
 
-    public CommitsRecyclerAdapter getCommitsRecyclerAdapter() {
-        return commitsRecyclerAdapter;
-    }
+    private Repository repository;
 
     @Inject
-    public MainViewModel(CommitsApi commitsApi) {
+    MainViewModel(CommitsApi commitsApi, Repository repository) {
         this.commitsApi = commitsApi;
+        this.repository = repository;
+        if (repository.getGitRepository() != null) {
+            loadCommits();
+        }
     }
 
     public LiveData<List<CommitResponse>> getCommits() {
         return commits;
     }
 
-    public LiveData<Boolean> getIsError() {
+    LiveData<Boolean> getIsError() {
         return isError;
     }
 
@@ -61,71 +63,51 @@ public class MainViewModel extends ViewModel {
         return isRepoSet;
     }
 
-    public Repository getRepository() {
-        return repository;
+    GitRepository getGitRepository() {
+        return gitRepository;
     }
 
     /**
-     * sets the repository
+     * sets the gitRepository
      *
-     * @param repository a {@link Repository} instance
+     * @param gitRepository a {@link GitRepository} instance
      */
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-        // Notify that repository is set.
+    void setGitRepository(GitRepository gitRepository) {
+        this.gitRepository = gitRepository;
+        repository.setGitRepository(gitRepository);
+        // Notify that gitRepository is set.
         isRepoSet.setValue(true);
     }
 
     /**
      * Loads the commits from commits API
      */
-    public void loadCommits() {
-        // Is currently loading
-        isLoading.setValue(true);
-        commitsApi.getCommits(repository.getOwner(), repository.getRepo()).enqueue(new Callback<List<CommitResponse>>() {
-            @Override
-            public void onResponse(@NotNull Call<List<CommitResponse>> call, @NotNull Response<List<CommitResponse>> response) {
-                if (response.body() != null) {
-                    commits.setValue(response.body());
-                    isError.setValue(false);
-                } else {
+    void loadCommits() {
+        if (repository.getGitRepository() != null) {
+            isRepoSet.setValue(true);
+            // Is currently loading
+            isLoading.setValue(true);
+            commitsApi.getCommits(repository.getGitRepository().getOwner(), repository.getGitRepository().getRepo()).enqueue(new Callback<List<CommitResponse>>() {
+                @Override
+                public void onResponse(@NotNull Call<List<CommitResponse>> call, @NotNull Response<List<CommitResponse>> response) {
+                    if (response.body() != null) {
+                        commits.setValue(response.body());
+                        isError.setValue(false);
+                    } else {
+                        isError.setValue(true);
+                    }
+                    // Stopped loading
+                    isLoading.setValue(false);
+                }
+
+                @Override
+                public void onFailure(@NotNull Call<List<CommitResponse>> call, @NotNull Throwable t) {
+                    isLoading.setValue(false);
                     isError.setValue(true);
                 }
-                // Stopped loading
-                isLoading.setValue(false);
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<List<CommitResponse>> call, @NotNull Throwable t) {
-                isLoading.setValue(false);
-                isError.setValue(true);
-            }
-        });
-    }
-
-    /**
-     * Repository class model for Github repo owner and name
-     */
-    static class Repository {
-        private String owner;
-        private String repo;
-
-        Repository(String owner, String repo) {
-            this.owner = owner;
-            this.repo = repo;
+            });
         }
 
-        public Repository() {
-
-        }
-
-        String getOwner() {
-            return owner;
-        }
-
-        String getRepo() {
-            return repo;
-        }
     }
 
 }

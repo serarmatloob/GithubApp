@@ -1,6 +1,9 @@
 package com.matloob.githubapp.dagger;
 
+import android.app.Application;
+
 import com.matloob.githubapp.util.Constants;
+import com.matloob.githubapp.util.SharedPreferencesUtil;
 
 import javax.inject.Singleton;
 
@@ -22,6 +25,12 @@ public class AppModule {
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+    }
+
+    @Singleton
+    @Provides
+    static SharedPreferencesUtil providePreferencesUtil(Application context) {
+        return new SharedPreferencesUtil(context.getApplicationContext());
     }
 
 }

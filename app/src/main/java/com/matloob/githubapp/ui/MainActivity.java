@@ -1,5 +1,6 @@
 package com.matloob.githubapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.snackbar.Snackbar;
 import com.matloob.githubapp.R;
 import com.matloob.githubapp.databinding.ActivityMainBinding;
+import com.matloob.githubapp.models.CommitResponse;
+import com.matloob.githubapp.models.GitRepository;
+import com.matloob.githubapp.ui.details.DetailsActivity;
+import com.matloob.githubapp.util.SharedPreferencesUtil;
 import com.matloob.githubapp.util.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -27,6 +32,9 @@ public class MainActivity extends DaggerAppCompatActivity implements MainViewLis
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    CommitsRecyclerAdapter commitsRecyclerAdapter;
+
     // ViewModel instance
     private MainViewModel viewModel;
 
@@ -40,6 +48,7 @@ public class MainActivity extends DaggerAppCompatActivity implements MainViewLis
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
+        binding.setAdapter(commitsRecyclerAdapter);
 
         // Observe error and show snackBar
         viewModel.getIsError().observe(this, error ->
@@ -67,22 +76,32 @@ public class MainActivity extends DaggerAppCompatActivity implements MainViewLis
      */
     public void showDialog() {
         // Show dialog with saved owner and repo
-        DialogFragment dialogFragment = new SearchDialog(viewModel.getRepository().getOwner(), viewModel.getRepository().getRepo());
+        DialogFragment dialogFragment = new SearchDialog(new GitRepository(viewModel.getGitRepository().getOwner(), viewModel.getGitRepository().getRepo()));
         dialogFragment.show(getSupportFragmentManager(), "dialog");
     }
 
     /**
      * Set repository callback to
      *
-     * @param owner {@link String} the owner of repo
-     * @param repo  {@link String} repo name
+     * @param gitRepository {@link GitRepository} the repo
      */
     @Override
-    public void onSetNewRepo(String owner, String repo) {
+    public void onSetNewRepo(GitRepository gitRepository) {
         // Set repo args
-        viewModel.setRepository(new MainViewModel.Repository(owner, repo));
+        viewModel.setGitRepository(gitRepository);
         // Start loading commits
         viewModel.loadCommits();
+    }
+
+    @Override
+    public void onItemClick(CommitResponse commitResponse) {
+        Intent intent = new Intent(this, DetailsActivity.class);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("object", commitResponse);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     public void onSearchBtnClick(View view) {

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.matloob.githubapp.R;
+import com.matloob.githubapp.models.GitRepository;
 
 import javax.inject.Inject;
 
@@ -22,16 +23,15 @@ import dagger.android.support.DaggerDialogFragment;
 public class SearchDialog extends DaggerDialogFragment {
     @Inject
     MainViewListener mainViewListener;
-    private String owner;
-    private String repo;
+
+    private GitRepository gitRepository;
 
     public SearchDialog() {
         // Required empty constructor
     }
 
-    public SearchDialog(String owner, String repo) {
-        this.owner = owner;
-        this.repo = repo;
+    SearchDialog(GitRepository gitRepository) {
+        this.gitRepository = gitRepository;
     }
 
     @NonNull
@@ -41,13 +41,14 @@ public class SearchDialog extends DaggerDialogFragment {
         EditText ownerEditText = dialogView.findViewById(R.id.owner);
         EditText repoEditText = dialogView.findViewById(R.id.repo);
         // Get text from whatever last saved in view model and set it to edit text.
-        ownerEditText.setText(owner);
-        repoEditText.setText(repo);
+        ownerEditText.setText(gitRepository.getOwner());
+        repoEditText.setText(gitRepository.getRepo());
         // Return alert dialog to get input from user.
         return new AlertDialog.Builder(getContext())
                 .setView(dialogView)
                 .setTitle(R.string.search)
-                .setPositiveButton("OK", (dialogInterface, i) -> mainViewListener.onSetNewRepo(ownerEditText.getText().toString(), repoEditText.getText().toString()))
+                .setPositiveButton("OK", (dialogInterface, i) ->
+                        mainViewListener.onSetNewRepo(new GitRepository(ownerEditText.getText().toString(), repoEditText.getText().toString())))
                 .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).create();
     }
 }
