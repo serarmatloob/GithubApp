@@ -1,5 +1,8 @@
 package com.matloob.githubapp.models;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -10,11 +13,15 @@ import java.io.Serializable;
 public class Commit implements Serializable {
 
     @SerializedName("author")
+    @Embedded
     private CommitAuthor author;
     @SerializedName("message")
     private String message;
     @SerializedName("tree")
+    @Embedded
     private Tree tree;
+
+
 
     public CommitAuthor getAuthor() {
         return author;

@@ -28,7 +28,7 @@ public class MainViewModel extends ViewModel {
     // Init empty epo
     private GitRepository gitRepository = new GitRepository();
     // Commits live data
-    private MutableLiveData<List<CommitResponse>> commits = new MutableLiveData<>();
+    private LiveData<List<CommitResponse>> commits = new MutableLiveData<>();
 
     // Booleans for status
     private MutableLiveData<Boolean> isError = new MutableLiveData<>();
@@ -48,7 +48,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public LiveData<List<CommitResponse>> getCommits() {
-        return commits;
+        return repository.getmAllCommits();
     }
 
     LiveData<Boolean> getIsError() {
@@ -87,11 +87,16 @@ public class MainViewModel extends ViewModel {
             isRepoSet.setValue(true);
             // Is currently loading
             isLoading.setValue(true);
+            commits = repository.getmAllCommits();
             commitsApi.getCommits(repository.getGitRepository().getOwner(), repository.getGitRepository().getRepo()).enqueue(new Callback<List<CommitResponse>>() {
                 @Override
                 public void onResponse(@NotNull Call<List<CommitResponse>> call, @NotNull Response<List<CommitResponse>> response) {
                     if (response.body() != null) {
-                        commits.setValue(response.body());
+                        repository.removeAll();
+//                        commits.setValue(response.body());
+                        for(CommitResponse commitResponse: response.body()){
+                            repository.insert(commitResponse);
+                        }
                         isError.setValue(false);
                     } else {
                         isError.setValue(true);

@@ -1,5 +1,7 @@
 package com.matloob.githubapp.dagger.main;
 
+import android.app.Application;
+
 import com.matloob.githubapp.api.CommitsApi;
 import com.matloob.githubapp.repository.Repository;
 import com.matloob.githubapp.ui.CommitsRecyclerAdapter;
@@ -32,7 +34,7 @@ public abstract class MainActivityModule {
     }
 
     @Provides
-    static Repository provideRepo(SharedPreferencesUtil sharedPreferencesUtil) {
-        return new Repository(sharedPreferencesUtil);
+    static Repository provideRepo(SharedPreferencesUtil sharedPreferencesUtil, Application application) {
+        return new Repository(sharedPreferencesUtil, application);
     }
 }
